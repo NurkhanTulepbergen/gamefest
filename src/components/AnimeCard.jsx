@@ -1,12 +1,15 @@
 import React from "react";
 import "./AnimeCard.css";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useFavorites } from "../hooks/useFavorites";
 
-export default function AnimeCard({ anime, isFavorite, toggleFavorite }) {
-    const idddd = '/items/'+anime.mal_id;
+export default function AnimeCard({ anime }) {
+    const { isFavorite, toggle } = useFavorites();
+    const id = `/items/${anime.mal_id}`;
+
+    const liked = isFavorite(anime.mal_id);
 
     return (
-
         <div className="anime-card">
             <img
                 src={anime.images?.jpg?.image_url}
@@ -30,15 +33,14 @@ export default function AnimeCard({ anime, isFavorite, toggleFavorite }) {
                 </a>
 
                 <button
-                    className={`like-button ${isFavorite ? "liked" : ""}`}
-                    onClick={() => toggleFavorite(anime)}
+                    className={`like-button ${liked ? "liked" : ""}`}
+                    onClick={() => toggle(anime)}
                     aria-label="Add to favorites"
                 >
-                    {isFavorite ? "❤️" : "🤍"}
+                    {liked ? "❤️" : "🤍"}
                 </button>
 
-                <Link to={idddd} className="btn">Details</Link>
-
+                <Link to={id} className="btn">Details</Link>
             </div>
         </div>
     );

@@ -1,18 +1,8 @@
-import React from "react";
 import "./SearchBar.css";
-import { useDispatch, useSelector } from "react-redux";
-import {fetchItems} from "../features/items/itemsSlice";
 
-
-export default function SearchBar({ searchTerm, setSearchTerm, handleSearch, fetchAnime }) {
-    const dispatch = useDispatch();
-    const handleClear = () => {
-        setSearchTerm("");
-        dispatch(fetchItems(""))
-    };
-
+export default function SearchBar({ searchTerm, setSearchTerm, onClear }) {
     return (
-        <form onSubmit={handleSearch} className="search-bar">
+        <form onSubmit={(e) => e.preventDefault()} className="search-bar">
             <div className="search-wrapper">
                 <input
                     type="text"
@@ -20,11 +10,12 @@ export default function SearchBar({ searchTerm, setSearchTerm, handleSearch, fet
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="search-input"
+                    name="search"
                 />
                 {searchTerm && (
                     <button
                         type="button"
-                        onClick={handleClear}
+                        onClick={onClear}
                         className="clear-button"
                         aria-label="Clear search"
                     >

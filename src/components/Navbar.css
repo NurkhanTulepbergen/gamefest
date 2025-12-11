@@ -89,3 +89,69 @@
         gap: 1.2rem;
     }
 }
+
+/* === КНОПКА-ССЫЛКА Logout === */
+.navlink-button {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+
+    color: #e2e8f0;
+    cursor: pointer;
+    font-weight: 500;
+
+    transition: color 0.25s ease, text-shadow 0.25s ease;
+}
+
+/* Hover как у обычного navlink */
+.navlink-button:hover {
+    color: #7dd3fc;
+    text-shadow: 0 0 8px #38bdf8;
+}
+
+/* Active стиль — такой же, как у .active */
+.navlink-button.active,
+.navlink-button:focus {
+    color: #38bdf8;
+    text-shadow: 0 0 10px #38bdf8;
+    position: relative;
+}
+
+/* neon underline like active NavLink */
+.navlink-button.active::after,
+.navlink-button:focus::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #38bdf8;
+    border-radius: 2px;
+    box-shadow: 0 0 6px #38bdf8;
+    animation: glow 1.2s ease-in-out infinite alternate;
+}
+
+.nav-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 6px;
+}
+
+.lang-switch button {
+    margin-left: 8px;
+    padding: 3px 8px;
+    background: #333;
+    border: 1px solid #555;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.lang-switch button:hover {
+    background: #444;
+}

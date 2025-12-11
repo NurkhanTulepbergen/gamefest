@@ -1,32 +1,71 @@
 // src/pages/Signup.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useDispatch, useSelector } from "react-redux";
+import { signupUser } from "../features/auth/authSlice";
+
+import "./Login.css";
 
 export default function Signup() {
-    const { signup } = useAuth();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const { error } = useSelector((state) => state.auth);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [repeatPassword, setRepeatPassword] = useState("");
+    const [localError, setLocalError] = useState("");
+
+    function validateEmail(email) {
+        return /\S+@\S+\.\S+/.test(email);
+    }
+
+    function validatePassword(pass) {
+        return (
+            pass.length >= 8 &&
+            /[0-9]/.test(pass) &&
+            /[!@#$%^&*(),.?":{}|<>]/.test(pass)
+        );
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            setLoading(true);
-            await signup(email, password);
-            navigate("/profile");
-        } catch (err) {
-            setError(err.message);
+        setLocalError("");
+
+        // === Email validation ===
+        if (!validateEmail(email)) {
+            return setLocalError("Invalid email format");
         }
-        setLoading(false);
+
+        // === Password validation ===
+        if (!validatePassword(password)) {
+            return setLocalError(
+                "Password must be 8+ chars, include one number and one special character"
+            );
+        }
+
+        // === Password match ===
+        if (password !== repeatPassword) {
+            return setLocalError("Passwords do not match");
+        }
+
+        // === Dispatch signup ===
+        const result = await dispatch(signupUser({ email, password }));
+
+        if (result.meta.requestStatus === "fulfilled") {
+            navigate("/profile");
+        }
     };
 
     return (
         <div className="auth-page">
-            <h2>Signup</h2>
+            <h2>Create Account</h2>
+
+            {/* Validation errors */}
+            {localError && <p style={{ color: "red" }}>{localError}</p>}
+
+            {/* Redux errors from Firebase */}
             {error && <p style={{ color: "red" }}>{error}</p>}
 
             <form onSubmit={handleSubmit}>
@@ -35,16 +74,26 @@ export default function Signup() {
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    required
                 />
 
                 <input
                     type="password"
-                    placeholder="Password"
+                    placeholder="Password (8+ chars, number, special)"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
                 />
 
-                <button disabled={loading}>Create Account</button>
+                <input
+                    type="password"
+                    placeholder="Repeat password"
+                    value={repeatPassword}
+                    onChange={(e) => setRepeatPassword(e.target.value)}
+                    required
+                />
+
+                <button>Create Account</button>
             </form>
 
             <p>

@@ -12,7 +12,7 @@ export default function Home() {
             <div className="home-buttons">
                 <Link to="/items" className="btn">Browse Anime</Link>
                 <Link to="/favorites" className="btn">View Favorites</Link>
-                <Link to="/login" className="btn">Login</Link>
+
             </div>
 
             <div className="home-image">

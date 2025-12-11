@@ -1,0 +1,10 @@
+{
+  "home": "Home",
+  "all_anime": "All Anime",
+  "favorites": "Favorites",
+  "profile": "Profile",
+  "logout": "Logout",
+  "login": "Login",
+  "signup": "Sign Up",
+  "hello_user": "Hello, {{name}}!"
+}

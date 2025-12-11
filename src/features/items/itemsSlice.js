@@ -1,39 +1,62 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getAll, getAnimeById } from "../../services/animeService";
+import { getAll, getAnimeById } from "../../services/animeApiService";
 
-// 🔹 Загрузка списка аниме
+// ===============================
+// ⭐ FETCH LIST with query + page + limit + abort signal
+// ===============================
 export const fetchItems = createAsyncThunk(
     "items/fetchItems",
-    async (query, thunkAPI) => {
+    async ({ query = "", page = 1, limit = 10 }, thunkAPI) => {
         try {
-            return await getAll(query);
+            const { signal } = thunkAPI;
+            const response = await getAll({ query, page, limit, signal });
+
+            return {
+                items: response.items,
+                pagination: response.pagination,
+                query,
+                page,
+                limit,
+            };
         } catch (e) {
+            if (e.name === "AbortError") return;
             return thunkAPI.rejectWithValue("Error loading anime list");
         }
     }
 );
 
-// 🔹 Загрузка одного аниме по id
+// ===============================
+// ⭐ FETCH ONE ANIME
+// ===============================
 export const fetchItemById = createAsyncThunk(
     "items/fetchItemById",
     async (id, thunkAPI) => {
         try {
-            return await getAnimeById(id);
+            const { signal } = thunkAPI;
+            return await getAnimeById(id, { signal });
         } catch (e) {
+            if (e.name === "AbortError") return;
             return thunkAPI.rejectWithValue("Error loading anime details");
         }
     }
 );
 
-// ⭐ загрузка избранного из localStorage
-const loadFavorites = () => {
+// ===============================
+// ⭐ FAVORITES — LOCAL STORAGE
+// ===============================
+const LOCAL_KEY = "favorites";
+
+function loadLocalFavorites() {
     try {
-        const stored = localStorage.getItem("favorites");
-        return stored ? JSON.parse(stored) : [];
+        return JSON.parse(localStorage.getItem(LOCAL_KEY)) || [];
     } catch {
         return [];
     }
-};
+}
+
+function saveLocalFavorites(favs) {
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(favs));
+}
 
 const initialState = {
     list: [],
@@ -46,9 +69,15 @@ const initialState = {
     errorItem: null,
 
     query: "",
+    page: 1,
+    limit: 10,
+    pagination: null,
 
-    // ⭐ favorites теперь в Redux
-    favorites: loadFavorites()
+    // ⭐ локальные избранные (до логина)
+    favorites: loadLocalFavorites(),
+
+    // ⭐ флаг UI-сообщения о merge
+    mergeMessage: false,
 };
 
 const itemsSlice = createSlice({
@@ -56,54 +85,82 @@ const itemsSlice = createSlice({
     initialState,
 
     reducers: {
+        // -------------------------------
+        // SEARCH QUERY
+        // -------------------------------
         setQuery(state, action) {
             state.query = action.payload;
         },
 
-        // ⭐ toggleFavorite в Redux
-        toggleFavorite(state, action) {
+        // -------------------------------
+        // ⭐ toggle FAVORITES LOCALLY
+        // -------------------------------
+        toggleFavoriteLocal(state, action) {
             const anime = action.payload;
+            const exists = state.favorites.some((f) => f.mal_id === anime.mal_id);
 
-            const exists = state.favorites.some(
-                (fav) => fav.mal_id === anime.mal_id
-            );
+            state.favorites = exists
+                ? state.favorites.filter((f) => f.mal_id !== anime.mal_id)
+                : [...state.favorites, anime];
 
-            if (exists) {
-                state.favorites = state.favorites.filter(
-                    (fav) => fav.mal_id !== anime.mal_id
-                );
-            } else {
-                state.favorites.push(anime);
-            }
+            saveLocalFavorites(state.favorites);
+        },
 
-            // 💾 сразу сохраняем в localStorage
-            localStorage.setItem("favorites", JSON.stringify(state.favorites));
-        }
+        // -------------------------------
+        // ⭐ Replace favorites (after merge or Firestore load)
+        // -------------------------------
+        setFavorites(state, action) {
+            state.favorites = action.payload;
+            saveLocalFavorites(state.favorites);
+        },
+
+        // -------------------------------
+        // ⭐ Merge notification flag
+        // -------------------------------
+        showMergeMessage(state) {
+            state.mergeMessage = true;
+        },
+        hideMergeMessage(state) {
+            state.mergeMessage = false;
+        },
     },
 
     extraReducers: (builder) => {
         builder
-            // 📥 список
+            // ===============================
+            // LIST
+            // ===============================
             .addCase(fetchItems.pending, (state) => {
                 state.loadingList = true;
                 state.errorList = null;
             })
             .addCase(fetchItems.fulfilled, (state, action) => {
+                if (!action.payload) return;
                 state.loadingList = false;
-                state.list = action.payload;
+
+                const { items, pagination, query, page, limit } =
+                    action.payload;
+
+                state.list = items;
+                state.pagination = pagination;
+                state.query = query;
+                state.page = page;
+                state.limit = limit;
             })
             .addCase(fetchItems.rejected, (state, action) => {
                 state.loadingList = false;
-                state.errorList = action.payload;
+                state.errorList = action.payload || "Failed to load anime";
             })
 
-            // 📥 элемент
+            // ===============================
+            // DETAILS
+            // ===============================
             .addCase(fetchItemById.pending, (state) => {
                 state.loadingItem = true;
                 state.errorItem = null;
-                state.selectedItem = null;
             })
             .addCase(fetchItemById.fulfilled, (state, action) => {
+                if (!action.payload) return;
                 state.loadingItem = false;
                 state.selectedItem = action.payload;
             })
@@ -114,5 +171,12 @@ const itemsSlice = createSlice({
     },
 });
 
-export const { setQuery, toggleFavorite } = itemsSlice.actions;
+export const {
+    setQuery,
+    toggleFavoriteLocal,
+    setFavorites,
+    showMergeMessage,
+    hideMergeMessage,
+} = itemsSlice.actions;
+
 export default itemsSlice.reducer;

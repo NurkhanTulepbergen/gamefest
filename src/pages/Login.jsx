@@ -1,33 +1,35 @@
 // src/pages/Login.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../features/auth/authSlice";
+
 import "./Login.css";
 
 export default function Login() {
-    const { login } = useAuth();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const { user, error } = useSelector((state) => state.auth);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            setLoading(true);
-            await login(email, password);
-            navigate("/profile");
-        } catch (err) {
-            setError(err.message);
+
+        const result = await dispatch(loginUser({ email, password }));
+
+        if (result.meta.requestStatus === "fulfilled") {
+            navigate("/profile"); // успешный вход
         }
-        setLoading(false);
     };
 
     return (
         <div className="auth-page">
             <h2>Login</h2>
+
+            {/* Ошибка из Redux */}
             {error && <p style={{ color: "red" }}>{error}</p>}
 
             <form onSubmit={handleSubmit}>
@@ -36,6 +38,7 @@ export default function Login() {
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    required
                 />
 
                 <input
@@ -43,9 +46,10 @@ export default function Login() {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
                 />
 
-                <button disabled={loading}>Login</button>
+                <button>Login</button>
             </form>
 
             <p>
