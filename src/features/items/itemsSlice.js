@@ -1,9 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getAll, getAnimeById } from "../../services/animeApiService";
 
-// ===============================
-// ⭐ FETCH LIST with query + page + limit + abort signal
-// ===============================
 export const fetchItems = createAsyncThunk(
     "items/fetchItems",
     async ({ query = "", page = 1, limit = 10 }, thunkAPI) => {
@@ -25,9 +22,6 @@ export const fetchItems = createAsyncThunk(
     }
 );
 
-// ===============================
-// ⭐ FETCH ONE ANIME
-// ===============================
 export const fetchItemById = createAsyncThunk(
     "items/fetchItemById",
     async (id, thunkAPI) => {
@@ -41,9 +35,6 @@ export const fetchItemById = createAsyncThunk(
     }
 );
 
-// ===============================
-// ⭐ FAVORITES — LOCAL STORAGE
-// ===============================
 const LOCAL_KEY = "favorites";
 
 function loadLocalFavorites() {
@@ -73,10 +64,8 @@ const initialState = {
     limit: 10,
     pagination: null,
 
-    // ⭐ локальные избранные (до логина)
     favorites: loadLocalFavorites(),
 
-    // ⭐ флаг UI-сообщения о merge
     mergeMessage: false,
 };
 
@@ -85,16 +74,11 @@ const itemsSlice = createSlice({
     initialState,
 
     reducers: {
-        // -------------------------------
-        // SEARCH QUERY
-        // -------------------------------
+
         setQuery(state, action) {
             state.query = action.payload;
         },
 
-        // -------------------------------
-        // ⭐ toggle FAVORITES LOCALLY
-        // -------------------------------
         toggleFavoriteLocal(state, action) {
             const anime = action.payload;
             const exists = state.favorites.some((f) => f.mal_id === anime.mal_id);
@@ -106,17 +90,11 @@ const itemsSlice = createSlice({
             saveLocalFavorites(state.favorites);
         },
 
-        // -------------------------------
-        // ⭐ Replace favorites (after merge or Firestore load)
-        // -------------------------------
         setFavorites(state, action) {
             state.favorites = action.payload;
             saveLocalFavorites(state.favorites);
         },
 
-        // -------------------------------
-        // ⭐ Merge notification flag
-        // -------------------------------
         showMergeMessage(state) {
             state.mergeMessage = true;
         },
@@ -127,9 +105,6 @@ const itemsSlice = createSlice({
 
     extraReducers: (builder) => {
         builder
-            // ===============================
-            // LIST
-            // ===============================
             .addCase(fetchItems.pending, (state) => {
                 state.loadingList = true;
                 state.errorList = null;
@@ -152,9 +127,6 @@ const itemsSlice = createSlice({
                 state.errorList = action.payload || "Failed to load anime";
             })
 
-            // ===============================
-            // DETAILS
-            // ===============================
             .addCase(fetchItemById.pending, (state) => {
                 state.loadingItem = true;
                 state.errorItem = null;

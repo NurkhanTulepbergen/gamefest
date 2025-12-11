@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,7 +20,7 @@ export default function Login() {
         const result = await dispatch(loginUser({ email, password }));
 
         if (result.meta.requestStatus === "fulfilled") {
-            navigate("/profile"); // успешный вход
+            navigate("/profile");
         }
     };
 
@@ -29,7 +28,6 @@ export default function Login() {
         <div className="auth-page">
             <h2>Login</h2>
 
-            {/* Ошибка из Redux */}
             {error && <p style={{ color: "red" }}>{error}</p>}
 
             <form onSubmit={handleSubmit}>

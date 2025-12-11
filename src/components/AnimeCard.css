@@ -44,7 +44,6 @@
     margin: 2px 0;
 }
 
-/* Нижняя панель (footer) */
 .card-footer {
     display: flex;
     justify-content: space-between;
@@ -52,7 +51,6 @@
     width: 100%;
 }
 
-/* “More info” теперь слева */
 .more-info {
     background-color: #45a29e;
     color: #0b0c10;
@@ -68,7 +66,7 @@
     background-color: #66fcf1;
 }
 
-/* ❤️ справа */
+
 .like-button {
     background: transparent;
     border: none;

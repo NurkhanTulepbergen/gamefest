@@ -1,7 +1,7 @@
-// src/firebase.js
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getMessaging, isSupported } from "firebase/messaging";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCqE5AUtCXGZPp4kvDYNlchI4Vw-zJMp30",
@@ -16,8 +16,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
-
 export const db = getFirestore(app);
 
+export let messaging = null;
 
+if (typeof window !== "undefined" && typeof Notification !== "undefined") {
+    isSupported()
+        .then(supported => {
+            if (supported) messaging = getMessaging(app);
+        })
+        .catch(() => {
+            messaging = null;
+        });
+}
 

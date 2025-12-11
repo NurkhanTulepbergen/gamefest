@@ -50,8 +50,8 @@
 }
 
 .home-image img {
-    width: 420px; /* было 280px → увеличили */
-    max-width: 90%; /* чтобы адаптировалось под экран */
+    width: 420px;
+    max-width: 90%;
     border-radius: 16px;
     box-shadow: 0 8px 28px rgba(56, 189, 248, 0.25);
     transition: transform 0.35s ease, box-shadow 0.35s ease;

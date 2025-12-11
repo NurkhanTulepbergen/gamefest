@@ -21,7 +21,6 @@ h1 {
     margin-top: 10px;
 }
 
-/* Кнопки переключения (All / Favorites) */
 .view-buttons {
     display: flex;
     justify-content: center;

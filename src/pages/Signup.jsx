@@ -1,4 +1,3 @@
-// src/pages/Signup.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,24 +32,20 @@ export default function Signup() {
         e.preventDefault();
         setLocalError("");
 
-        // === Email validation ===
         if (!validateEmail(email)) {
             return setLocalError("Invalid email format");
         }
 
-        // === Password validation ===
         if (!validatePassword(password)) {
             return setLocalError(
                 "Password must be 8+ chars, include one number and one special character"
             );
         }
 
-        // === Password match ===
         if (password !== repeatPassword) {
             return setLocalError("Passwords do not match");
         }
 
-        // === Dispatch signup ===
         const result = await dispatch(signupUser({ email, password }));
 
         if (result.meta.requestStatus === "fulfilled") {
@@ -62,10 +57,8 @@ export default function Signup() {
         <div className="auth-page">
             <h2>Create Account</h2>
 
-            {/* Validation errors */}
             {localError && <p style={{ color: "red" }}>{localError}</p>}
 
-            {/* Redux errors from Firebase */}
             {error && <p style={{ color: "red" }}>{error}</p>}
 
             <form onSubmit={handleSubmit}>

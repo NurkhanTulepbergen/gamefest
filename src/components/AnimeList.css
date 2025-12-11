@@ -16,7 +16,6 @@
     color: #ff6f91;
 }
 
-/* Кнопка загрузки */
 .load-button {
     background: linear-gradient(90deg, #ff6f91, #ff9671);
     color: white;
@@ -35,7 +34,6 @@
     box-shadow: 0 0 15px rgba(255, 150, 113, 0.8);
 }
 
-/* Список карточек */
 .anime-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -45,7 +43,6 @@
     padding: 0;
 }
 
-/* === CLEAN PAGINATION (inside anime-list, no background) === */
 .pagination-controls {
     margin: 25px auto;
 
@@ -57,7 +54,6 @@
     width: fit-content;
     max-width: 100%;
 
-    /* ❌ убираем фон, рамку, blur, тени */
     background: none;
     border: none;
     backdrop-filter: none;
@@ -68,7 +64,6 @@
     font-family: "Poppins", sans-serif;
 }
 
-/* Prev | Page X / Y | Next */
 .pagination-left {
     display: flex;
     align-items: center;
@@ -76,7 +71,6 @@
     margin-bottom: 8px;
 }
 
-/* Buttons */
 .pagination-left button {
     background: #0e1a35;
     border: 1px solid rgba(255,255,255,0.25);
@@ -105,14 +99,12 @@
     cursor: not-allowed;
 }
 
-/* Page counter */
 .pagination-left span {
     margin: 0 10px;
     font-weight: 600;
     color: #7dd3fc;
 }
 
-/* Items per page centered below */
 .pagination-right {
     display: flex;
     justify-content: center;

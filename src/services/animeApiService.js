@@ -1,4 +1,3 @@
-// src/services/animeApiService.js
 
 /**
  * ============================

@@ -1,5 +1,3 @@
-// src/services/profileService.js
-
 import { auth } from "../firebase";
 
 /**
@@ -10,10 +8,7 @@ import { auth } from "../firebase";
  * @property {string} lastLogin
  */
 
-/**
- * Service for working with current user profile.
- * Only reads data, does NOT update Firebase Auth profile.
- */
+
 export const profileService = {
     /**
      * Получить профиль текущего пользователя Firebase Auth.
@@ -34,10 +29,7 @@ export const profileService = {
         };
     },
 
-    /**
-     * Обновление профиля недоступно без backend.
-     * Метод-«заглушка» для проекта TSIS.
-     */
+
     async updateProfile() {
         console.warn("Profile updates require a backend server.");
         return {

@@ -8,9 +8,6 @@ import {
 
 const LOCAL_KEY = "favorites";
 
-// ---------------------------------------
-// LOCAL STORAGE FAVORITES
-// ---------------------------------------
 function loadLocalFavorites() {
     try {
         return JSON.parse(localStorage.getItem(LOCAL_KEY)) || [];
@@ -23,9 +20,7 @@ function saveLocalFavorites(favs) {
     localStorage.setItem(LOCAL_KEY, JSON.stringify(favs));
 }
 
-// ---------------------------------------
-// FIRESTORE FAVORITES
-// ---------------------------------------
+
 async function loadUserFavorites(uid) {
     const ref = doc(db, "favorites", uid);
     const snap = await getDoc(ref);
@@ -38,9 +33,7 @@ async function saveUserFavorites(uid, items) {
     await setDoc(ref, { items }, { merge: true });
 }
 
-// ---------------------------------------
-// MERGE LOGIC
-// ---------------------------------------
+
 function mergeFavorites(localFavs, serverFavs) {
     const map = new Map();
 
@@ -51,9 +44,7 @@ function mergeFavorites(localFavs, serverFavs) {
     return Array.from(map.values());
 }
 
-// ---------------------------------------
-// PUBLIC API
-// ---------------------------------------
+
 export const favoritesService = {
     loadLocalFavorites,
     saveLocalFavorites,

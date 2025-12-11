@@ -16,9 +16,6 @@ export function useFavorites() {
 
     const favorites = useSelector((state) => state.items.favorites);
 
-    // ======================================================
-    // LOAD FAVORITES ON LOGIN (MERGE: local + Firestore)
-    // ======================================================
     useEffect(() => {
         if (!user) return;
 
@@ -30,17 +27,11 @@ export function useFavorites() {
         })();
     }, [user, dispatch]);
 
-    // ======================================================
-    // IS FAVORITE
-    // ======================================================
     const isFavorite = useCallback(
         (id) => favorites.some((f) => f.mal_id === id),
         [favorites]
     );
 
-    // ======================================================
-    // TOGGLE FAVORITE
-    // ======================================================
     const toggle = useCallback(
         async (anime) => {
             if (!user) {

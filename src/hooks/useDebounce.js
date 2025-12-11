@@ -5,7 +5,7 @@ export function useDebounce(value, delay = 400) {
 
     useEffect(() => {
         const id = setTimeout(() => setDebouncedValue(value), delay);
-        return () => clearTimeout(id); // switch logic: отменяем предыдущий таймер
+        return () => clearTimeout(id);
     }, [value, delay]);
 
     return debouncedValue;

@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import { NavLink, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../features/auth/authSlice";
@@ -44,6 +43,7 @@ export default function Navbar() {
                 {/* PUBLIC */}
                 <NavLink to="/items">{t("all_anime")}</NavLink>
                 <NavLink to="/favorites">{t("favorites")}</NavLink>
+                <NavLink to="/gallery">gallery</NavLink>
 
                 {/* PRIVATE */}
                 {user && (

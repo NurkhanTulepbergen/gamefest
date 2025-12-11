@@ -11,7 +11,6 @@
     z-index: 1000;
 }
 
-/* === ЛОГО === */
 .logo {
     font-size: 1.5rem;
     color: #38bdf8;
@@ -28,7 +27,6 @@
     text-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
 }
 
-/* === ССЫЛКИ === */
 .navbar-links {
     display: flex;
     gap: 2rem;
@@ -46,8 +44,7 @@
     text-shadow: 0 0 8px #38bdf8;
 }
 
-/* === АКТИВНАЯ СТРАНИЦА === */
-/* Убираем фоновую заливку, добавляем неоновую подсветку */
+
 .navbar-links a.active {
     background: none;
     color: #38bdf8;
@@ -55,7 +52,6 @@
     position: relative;
 }
 
-/* Подчёркивание неоновое под активной ссылкой */
 .navbar-links a.active::after {
     content: "";
     position: absolute;
@@ -78,7 +74,6 @@
     }
 }
 
-/* === АДАПТИВ === */
 @media (max-width: 700px) {
     .navbar {
         flex-direction: column;
@@ -90,7 +85,7 @@
     }
 }
 
-/* === КНОПКА-ССЫЛКА Logout === */
+
 .navlink-button {
     background: none;
     border: none;
@@ -104,13 +99,11 @@
     transition: color 0.25s ease, text-shadow 0.25s ease;
 }
 
-/* Hover как у обычного navlink */
 .navlink-button:hover {
     color: #7dd3fc;
     text-shadow: 0 0 8px #38bdf8;
 }
 
-/* Active стиль — такой же, как у .active */
 .navlink-button.active,
 .navlink-button:focus {
     color: #38bdf8;
@@ -118,7 +111,6 @@
     position: relative;
 }
 
-/* neon underline like active NavLink */
 .navlink-button.active::after,
 .navlink-button:focus::after {
     content: "";

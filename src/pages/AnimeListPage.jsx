@@ -13,32 +13,23 @@ export default function AnimeListPage() {
     const dispatch = useDispatch();
     const [params, setParams] = useSearchParams();
 
-    // -------------------------------
-    // URL STATE
-    // -------------------------------
+
     const queryFromUrl = params.get("q") || "";
     const pageFromUrl = Number(params.get("page") || 1);
     const limitFromUrl = Number(params.get("limit") || 10);
 
-    // -------------------------------
-    // LOCAL SEARCH INPUT STATE
-    // -------------------------------
+
     const [searchTerm, setSearchTerm] = useState(queryFromUrl);
 
-    // Debounced search — custom hook #1
     const debouncedSearch = useDebounce(searchTerm, 500);
 
     const { list, loadingList, errorList, pagination } =
         useSelector((state) => state.items);
 
-    // 🔄 Sync input with URL when URL changes manually
     useEffect(() => {
         setSearchTerm(queryFromUrl);
     }, [queryFromUrl]);
 
-    // ----------------------------------
-    // UPDATE URL when debounced value changes
-    // ----------------------------------
     useEffect(() => {
         if (debouncedSearch === queryFromUrl) return;
 
@@ -52,9 +43,6 @@ export default function AnimeListPage() {
         setParams(next);
     }, [debouncedSearch, queryFromUrl, limitFromUrl, setParams]);
 
-    // ----------------------------------
-    // FETCH DATA when URL changes
-    // ----------------------------------
     useEffect(() => {
         dispatch(
             fetchItems({
@@ -65,9 +53,6 @@ export default function AnimeListPage() {
         );
     }, [dispatch, queryFromUrl, pageFromUrl, limitFromUrl]);
 
-    // ----------------------------------
-    // CLEAR SEARCH
-    // ----------------------------------
     const handleClear = useCallback(() => {
         setSearchTerm("");
 
@@ -79,9 +64,6 @@ export default function AnimeListPage() {
         setParams(next);
     }, [params, limitFromUrl, setParams]);
 
-    // ----------------------------------
-    // PAGINATION
-    // ----------------------------------
     const totalPages = useMemo(
         () => pagination?.last_visible_page || 1,
         [pagination]
@@ -115,9 +97,6 @@ export default function AnimeListPage() {
         [queryFromUrl, setParams]
     );
 
-    // ----------------------------------
-    // RENDER
-    // ----------------------------------
     return (
         <div className="app">
             <SearchBar
@@ -126,7 +105,6 @@ export default function AnimeListPage() {
                 onClear={handleClear}
             />
 
-            {/* PAGINATION */}
             <div className="pagination-controls">
                 <div className="pagination-left">
                     <button

@@ -1,4 +1,3 @@
-// === Конфигурация кешей ===
 const APP_SHELL_CACHE = "anime-app-shell-v1";
 const RUNTIME_CACHE = "anime-runtime-v1";
 
@@ -9,10 +8,8 @@ const APP_SHELL_URLS = [
     "icons/icon-512.png",
 ];
 
-// Публичный API — подставь свой (скорее всего Jikan)
 const PUBLIC_API_ORIGIN = "https://api.jikan.moe";
 
-// === install: pre-cache app shell ===
 self.addEventListener("install", (event) => {
     console.log("[SW] Install");
 
@@ -26,7 +23,6 @@ self.addEventListener("install", (event) => {
     self.skipWaiting();
 });
 
-// === activate: очистка старых кешей + захват клиентов ===
 self.addEventListener("activate", (event) => {
     console.log("[SW] Activate");
 
@@ -46,11 +42,9 @@ self.addEventListener("activate", (event) => {
     self.clients.claim();
 });
 
-// === fetch: offline, runtime caching, fallback ===
 self.addEventListener("fetch", (event) => {
     const request = event.request;
 
-    // 1. Navigation requests (React Router SPA)
     if (request.mode === "navigate") {
         event.respondWith(
             (async () => {
@@ -64,10 +58,8 @@ self.addEventListener("fetch", (event) => {
                 }
 
                 try {
-                    // 2 — загружаем / из сети, НИКАКИХ index.html
                     const network = await fetch("/");
 
-                    // обязательно кешируем /
                     cache.put("/", network.clone());
 
                     return network;
@@ -83,14 +75,12 @@ self.addEventListener("fetch", (event) => {
     }
 
 
-    // 2. Runtime caching for public API
     const url = new URL(request.url);
     if (url.origin === PUBLIC_API_ORIGIN) {
         event.respondWith(networkFirstForApi(request));
         return;
     }
 
-    // 3. Cache-first for static assets
     event.respondWith(
         caches.match(request).then((cached) => {
             return (
@@ -106,7 +96,6 @@ self.addEventListener("fetch", (event) => {
     );
 });
 
-// === network-first стратегия для API ===
 async function networkFirstForApi(request) {
     try {
         const networkResponse = await fetch(request);
