@@ -1,40 +1,36 @@
-import { auth } from "../firebase";
-
-/**
- * @typedef {Object} UserProfile
- * @property {string} uid
- * @property {string | null} email
- * @property {string} createdAt
- * @property {string} lastLogin
- */
-
+import { auth, db } from "../firebase";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 export const profileService = {
-    /**
-     * Получить профиль текущего пользователя Firebase Auth.
-     * @returns {Promise<UserProfile>}
-     */
     async getCurrentProfile() {
         const user = auth.currentUser;
+        if (!user) return null;
 
-        if (!user) {
-            throw new Error("User is not authenticated");
+        const ref = doc(db, "users", user.uid);
+        const snap = await getDoc(ref);
+
+        if (!snap.exists()) {
+            const data = {
+                uid: user.uid,
+                email: user.email,
+                createdAt: new Date().toISOString(),
+                photoBase64: null,
+            };
+            await setDoc(ref, data);
+            return data;
         }
 
-        return {
-            uid: user.uid,
-            email: user.email,
-            createdAt: user.metadata.creationTime,
-            lastLogin: user.metadata.lastSignInTime,
-        };
+        return snap.data();
     },
 
+    async uploadAvatar(base64Image) {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Not authenticated");
 
-    async updateProfile() {
-        console.warn("Profile updates require a backend server.");
-        return {
-            success: false,
-            message: "Profile update is not implemented",
-        };
+        await updateDoc(doc(db, "users", user.uid), {
+            photoBase64: base64Image,
+        });
+
+        return base64Image;
     },
 };

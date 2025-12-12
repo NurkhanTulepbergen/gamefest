@@ -1,41 +1,41 @@
-// src/pages/Profile.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../features/auth/authSlice";
 import { profileService } from "../services/profileService";
-import "./Profile.css";
 
 export default function Profile() {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.user);
 
     const [profile, setProfile] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const workerRef = useRef(null);
 
     useEffect(() => {
         if (!user) return;
 
-        let cancelled = false;
+        workerRef.current = new Worker(
+            new URL("../workers/imageWorker.js", import.meta.url)
+        );
 
-        async function loadProfile() {
-            try {
-                const data = await profileService.getCurrentProfile();
-                if (!cancelled) setProfile(data);
-            } finally {
-                if (!cancelled) setLoading(false);
-            }
-        }
+        profileService.getCurrentProfile().then(setProfile);
 
-        loadProfile();
-        return () => {
-            cancelled = true;
-        };
+        return () => workerRef.current?.terminate();
     }, [user]);
 
-    if (!user) return <h2>Please login</h2>;
-    if (loading) return <h2>Loading profile...</h2>;
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-    const letter = profile?.email?.charAt(0).toUpperCase() || "?";
+        workerRef.current.postMessage(file);
+
+        workerRef.current.onmessage = async (e) => {
+            const base64 = e.data;
+            await profileService.uploadAvatar(base64);
+            setProfile((p) => ({ ...p, photoBase64: base64 }));
+        };
+    };
+
+    if (!user || !profile) return <h2>Loading...</h2>;
 
     return (
         <div className="profile-page">
@@ -43,15 +43,20 @@ export default function Profile() {
                 <h2>Your Profile</h2>
 
                 <div className="profile-avatar">
-                    {letter}
+                    {profile.photoBase64 ? (
+                        <img src={profile.photoBase64} />
+                    ) : (
+                        profile.email[0].toUpperCase()
+                    )}
                 </div>
 
-                <div className="profile-info">
-                    <p><strong>Email:</strong> {profile.email}</p>
-                    <p><strong>UID:</strong> {profile.uid}</p>
-                    <p><strong>Created:</strong> {profile.createdAt}</p>
-                    <p><strong>Last login:</strong> {profile.lastLogin}</p>
-                </div>
+                <input
+                    type="file"
+                    accept="image/png, image/jpeg"
+                    onChange={handleFileChange}
+                />
+
+                <p>{profile.email}</p>
 
                 <button onClick={() => dispatch(logoutUser())}>
                     Logout

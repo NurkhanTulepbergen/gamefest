@@ -8,6 +8,8 @@ import { fetchItems } from "../features/items/itemsSlice";
 import { useDebounce } from "../hooks/useDebounce";
 
 import "../components/AnimeList.css";
+import {auth} from "../firebase";
+import {requestNotificationPermission} from "../services/notificationService";
 
 export default function AnimeListPage() {
     const dispatch = useDispatch();
@@ -29,6 +31,13 @@ export default function AnimeListPage() {
     useEffect(() => {
         setSearchTerm(queryFromUrl);
     }, [queryFromUrl]);
+
+    useEffect(() => {
+        const uid = auth.currentUser?.uid;
+        if (uid) {
+            requestNotificationPermission(uid);
+        }
+    }, []);
 
     useEffect(() => {
         if (debouncedSearch === queryFromUrl) return;
